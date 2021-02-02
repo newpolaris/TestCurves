@@ -16,6 +16,11 @@
 #include <dinput.h>
 #include <tchar.h>
 #include <glm/glm.hpp>
+#include <vector>
+
+const glm::vec4 white(1.f);
+const glm::vec4 pink(1.00f, 0.00f, 0.75f, 1.0f);
+const glm::vec4 cyan(0.00f, 0.75f, 1.00f, 1.0f);
 
 // Data
 static ID3D11Device*            g_pd3dDevice = NULL;
@@ -30,21 +35,36 @@ void CreateRenderTarget();
 void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-bool LinePlot()
+struct ImGuiGrid
 {
-    using namespace ImGui;
-
     enum { LINE_WIDTH = 1 }; // handlers: small lines width
     enum { GRAB_RADIUS = 8 }; // handlers: circle radius
     enum { GRAB_BORDER = 2 }; // handlers: circle border width
     enum { AREA_CONSTRAINED = true }; // should grabbers be constrained to grid area?
     enum { AREA_WIDTH = 256 }; // area width in pixels. 0 for adaptive size (will use max avail width)
 
+    bool drawGrid();
+    bool drawLine(glm::vec2 a, glm::vec2 b, glm::vec4 c);
+    bool drawPoint(glm::vec2 p, glm::vec4 c);
+
+    ImVec2 scalePosition(glm::vec2 p);
+
+    glm::vec2 mgmin = glm::vec2(0.f);
+    glm::vec2 mgmax = glm::vec2(1.f);
+
+    ImVec2 mCanvas;
+    ImRect mbb;
+};
+
+bool ImGuiGrid::drawGrid()
+{
+    using namespace ImGui;
+
     // prepare canvas
     const float avail = GetContentRegionAvailWidth();
     const float dim = AREA_WIDTH > 0 ? AREA_WIDTH : avail;
-    ImVec2 Canvas(dim, dim);
 
+    ImVec2 Canvas(dim, dim);
     const ImGuiStyle& Style = GetStyle();
 
     ImDrawList* DrawList = GetWindowDrawList();
@@ -52,7 +72,7 @@ bool LinePlot()
     if (Window->SkipItems)
         return false;
 
-    ImRect bb(Window->DC.CursorPos, Window->DC.CursorPos + Canvas);
+    ImRect bb = ImRect(Window->DC.CursorPos, Window->DC.CursorPos + Canvas);
     ItemSize(bb);
     if (!ItemAdd(bb, NULL))
         return false;
@@ -73,38 +93,78 @@ bool LinePlot()
             GetColorU32(ImGuiCol_TextDisabled));
     }
 
-    static float P[5] = { 0.950f, 0.050f, 0.495f, 0.235f };
+    mbb = bb;
+    mCanvas = Canvas;
+
+    return true;
+}
+
+bool ImGuiGrid::drawLine(glm::vec2 a, glm::vec2 b, glm::vec4 c)
+{
+    using namespace ImGui;
+
+    ImDrawList* DrawList = GetWindowDrawList();
+
+    float luma = IsItemActive() || IsItemHovered() ? 0.5f : 1.0f;
+
+    ImVec2 p1 = scalePosition(a);
+    ImVec2 p2 = scalePosition(b);
+    ImColor color(c.r, c.g, c.b, c.a);
+
+    DrawList->AddLine(p1, p2, color, LINE_WIDTH);
+
+    return true;
+}
+
+bool ImGuiGrid::drawPoint(glm::vec2 p, glm::vec4 c)
+{
+    using namespace ImGui;
 
     ImVec4 white(GetStyle().Colors[ImGuiCol_Text]);
 
-    float luma = IsItemActive() || IsItemHovered() ? 0.5f : 1.0f;
-    ImVec4 pink(1.00f, 0.00f, 0.75f, luma), cyan(0.00f, 0.75f, 1.00f, luma);
-    ImVec2 p1 = ImVec2(P[0], 1 - P[1]) * (bb.Max - bb.Min) + bb.Min;
-    ImVec2 p2 = ImVec2(P[2], 1 - P[3]) * (bb.Max - bb.Min) + bb.Min;
+    ImDrawList* DrawList = GetWindowDrawList();
 
-    auto DrawLine = [&](const ImVec2& a, const ImVec2& b, const ImColor& c) {
-        DrawList->AddLine(a, b, c, LINE_WIDTH);
-    };
+    ImVec2 pos = scalePosition(p);
+    ImColor color(c.r, c.g, c.b, c.a);
 
-    auto DrawPoint = [&](const ImVec2& p, const ImColor& c) {
-        DrawList->AddCircleFilled(p, GRAB_RADIUS, ImColor(white));
-        DrawList->AddCircleFilled(p, GRAB_RADIUS - GRAB_BORDER, c);
-    };
-
-    DrawLine(ImVec2(bb.Min.x, bb.Max.y), p1, ImColor(white));
-    DrawLine(ImVec2(bb.Max.x, bb.Min.y), p2, ImColor(white));
-
-    DrawPoint(p1, ImColor(pink));
-    DrawPoint(p2, ImColor(cyan));
+    DrawList->AddCircleFilled(pos, GRAB_RADIUS, ImColor(white));
+    DrawList->AddCircleFilled(pos, GRAB_RADIUS - GRAB_BORDER, color);
 
     return true;
+}
+
+ImVec2 ImGuiGrid::scalePosition(glm::vec2 p)
+{
+    glm::vec2 npos = (p - mgmin) / (mgmax - mgmin);
+    return ImVec2(npos.x, 1 - npos.y) * (mbb.Max - mbb.Min) + mbb.Min;
 }
 
 void ShowLinePlot()
 {
     ImGui::Begin("Debug");
     ImGui::Text("Bezier curve");
-    LinePlot();
+
+    auto p1 = glm::vec2(-5.f, 0.f);
+    auto p2 = glm::vec2(+5.f, 0.f);
+    auto c1 = glm::vec2(-2.f, 1.f);
+    auto c2 = glm::vec2(+2.f, 1.f);
+
+    auto red = glm::vec4(1.f, 0.f, 0.f, 1.f);
+    auto green = glm::vec4(0.f, 1.f, 0.f, 1.f);
+    auto blue = glm::vec4(0.f, 0.f, 1.f, 1.f);
+    auto magenta = glm::vec4(1.f, 0.f, 1.f, 1.f);
+
+    ImGuiGrid grid;
+    grid.mgmin = glm::vec2(-5.f);
+    grid.mgmax = glm::vec2(+5.f);
+    grid.drawGrid();
+    grid.drawLine(p1, c1, white);
+    grid.drawLine(p2, c2, white);
+    grid.drawPoint(p1, red);
+    grid.drawPoint(c1, green);
+    grid.drawPoint(p2, red);
+    grid.drawPoint(c2, green);
+
     ImGui::End();
 }
 

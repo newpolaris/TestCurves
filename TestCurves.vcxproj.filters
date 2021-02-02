@@ -16,6 +16,9 @@
     <Filter Include="Source Files\imgui">
       <UniqueIdentifier>{4f0aec52-5f2d-4f1e-91e4-e518c507017b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gszauer">
+      <UniqueIdentifier>{b9e69c17-d4a1-4890-b21b-76de175fc05a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -38,6 +41,9 @@
     </ClCompile>
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gszauer\Vec3.cpp">
+      <Filter>Source Files\gszauer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="imgui\imstb_truetype.h">
       <Filter>Source Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gszauer\Vec3.h">
+      <Filter>Source Files\gszauer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
