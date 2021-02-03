@@ -15,12 +15,12 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <tchar.h>
-#include <glm/glm.hpp>
 #include <vector>
+#include "gszauer/Vec3.h"
 
-const glm::vec4 white(1.f);
-const glm::vec4 pink(1.00f, 0.00f, 0.75f, 1.0f);
-const glm::vec4 cyan(0.00f, 0.75f, 1.00f, 1.0f);
+const gszauer::vec4 white(1.f, 1.f, 1.f, 1.f);
+const gszauer::vec4 pink(1.00f, 0.00f, 0.75f, 1.0f);
+const gszauer::vec4 cyan(0.00f, 0.75f, 1.00f, 1.0f);
 
 // Data
 static ID3D11Device*            g_pd3dDevice = NULL;
@@ -44,13 +44,15 @@ struct ImGuiGrid
     enum { AREA_WIDTH = 256 }; // area width in pixels. 0 for adaptive size (will use max avail width)
 
     bool drawGrid();
-    bool drawLine(glm::vec2 a, glm::vec2 b, glm::vec4 c);
-    bool drawPoint(glm::vec2 p, glm::vec4 c);
+    bool drawLine(gszauer::vec2 a, gszauer::vec2 b, gszauer::vec4 c);
+    bool drawPoint(gszauer::vec2 p, gszauer::vec4 c);
+    bool drawLine(gszauer::vec3 a, gszauer::vec3 b, gszauer::vec4 c);
+    bool drawPoint(gszauer::vec3 p, gszauer::vec4 c);
 
-    ImVec2 scalePosition(glm::vec2 p);
+    ImVec2 scalePosition(gszauer::vec2 p);
 
-    glm::vec2 mgmin = glm::vec2(0.f);
-    glm::vec2 mgmax = glm::vec2(1.f);
+    gszauer::vec2 mgmin = gszauer::vec2(0.f);
+    gszauer::vec2 mgmax = gszauer::vec2(1.f);
 
     ImVec2 mCanvas;
     ImRect mbb;
@@ -99,7 +101,7 @@ bool ImGuiGrid::drawGrid()
     return true;
 }
 
-bool ImGuiGrid::drawLine(glm::vec2 a, glm::vec2 b, glm::vec4 c)
+bool ImGuiGrid::drawLine(gszauer::vec2 a, gszauer::vec2 b, gszauer::vec4 c)
 {
     using namespace ImGui;
 
@@ -116,7 +118,7 @@ bool ImGuiGrid::drawLine(glm::vec2 a, glm::vec2 b, glm::vec4 c)
     return true;
 }
 
-bool ImGuiGrid::drawPoint(glm::vec2 p, glm::vec4 c)
+bool ImGuiGrid::drawPoint(gszauer::vec2 p, gszauer::vec4 c)
 {
     using namespace ImGui;
 
@@ -133,9 +135,19 @@ bool ImGuiGrid::drawPoint(glm::vec2 p, glm::vec4 c)
     return true;
 }
 
-ImVec2 ImGuiGrid::scalePosition(glm::vec2 p)
+bool ImGuiGrid::drawLine(gszauer::vec3 a, gszauer::vec3 b, gszauer::vec4 c)
 {
-    glm::vec2 npos = (p - mgmin) / (mgmax - mgmin);
+    return drawLine(gszauer::vec2(a), gszauer::vec2(b), c);
+}
+
+bool ImGuiGrid::drawPoint(gszauer::vec3 p, gszauer::vec4 c)
+{
+    return drawPoint(gszauer::vec2(p), c);
+}
+
+ImVec2 ImGuiGrid::scalePosition(gszauer::vec2 p)
+{
+    gszauer::vec2 npos = (p - mgmin) / (mgmax - mgmin);
     return ImVec2(npos.x, 1 - npos.y) * (mbb.Max - mbb.Min) + mbb.Min;
 }
 
@@ -144,20 +156,36 @@ void ShowLinePlot()
     ImGui::Begin("Debug");
     ImGui::Text("Bezier curve");
 
-    auto p1 = glm::vec2(-5.f, 0.f);
-    auto p2 = glm::vec2(+5.f, 0.f);
-    auto c1 = glm::vec2(-2.f, 1.f);
-    auto c2 = glm::vec2(+2.f, 1.f);
+    auto p1 = gszauer::vec3(-5.f, 0.f, 0.f);
+    auto p2 = gszauer::vec3(+5.f, 0.f, 0.f);
+    auto c1 = gszauer::vec3(-2.f, 1.f, 0.f);
+    auto c2 = gszauer::vec3(+2.f, 1.f, 0.f);
 
-    auto red = glm::vec4(1.f, 0.f, 0.f, 1.f);
-    auto green = glm::vec4(0.f, 1.f, 0.f, 1.f);
-    auto blue = glm::vec4(0.f, 0.f, 1.f, 1.f);
-    auto magenta = glm::vec4(1.f, 0.f, 1.f, 1.f);
+    auto red = gszauer::vec4(1.f, 0.f, 0.f, 1.f);
+    auto green = gszauer::vec4(0.f, 1.f, 0.f, 1.f);
+    auto blue = gszauer::vec4(0.f, 0.f, 1.f, 1.f);
+    auto magenta = gszauer::vec4(1.f, 0.f, 1.f, 1.f);
 
     ImGuiGrid grid;
-    grid.mgmin = glm::vec2(-5.f);
-    grid.mgmax = glm::vec2(+5.f);
+    grid.mgmin = gszauer::vec2(-5.f);
+    grid.mgmax = gszauer::vec2(+5.f);
     grid.drawGrid();
+
+    gszauer::Bezier<gszauer::vec3> curve;
+    curve.P1 = p1;
+    curve.P2 = p2;
+    curve.C1 = c1;
+    curve.C2 = c2;
+
+    static const int count = 200;
+    for (int i = 0; i < count; i++) {
+        float t0 = (float)(i + 0) / count;
+        float t1 = (float)(i + 1) / count;
+        auto k0 = gszauer::interpolate(curve, t0);
+        auto k1 = gszauer::interpolate(curve, t1);
+        grid.drawLine(k0, k1, magenta);
+    }
+
     grid.drawLine(p1, c1, white);
     grid.drawLine(p2, c2, white);
     grid.drawPoint(p1, red);
