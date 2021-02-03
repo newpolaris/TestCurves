@@ -17,6 +17,7 @@
 #include <tchar.h>
 #include <vector>
 #include "gszauer/Vec3.h"
+#include <glm/glm.hpp>
 
 const gszauer::vec4 white(1.f, 1.f, 1.f, 1.f);
 const gszauer::vec4 pink(1.00f, 0.00f, 0.75f, 1.0f);
