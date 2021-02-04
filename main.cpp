@@ -152,24 +152,28 @@ ImVec2 ImGuiGrid::scalePosition(gszauer::vec2 p)
     return ImVec2(npos.x, 1 - npos.y) * (mbb.Max - mbb.Min) + mbb.Min;
 }
 
-void ShowLinePlot()
+void ShowBezierPlot()
 {
-    ImGui::Begin("Debug");
-    ImGui::Text("Bezier curve");
+    using gszauer::vec2;
+    using gszauer::vec3;
+    using gszauer::vec4;
 
-    auto p1 = gszauer::vec3(-5.f, 0.f, 0.f);
-    auto p2 = gszauer::vec3(+5.f, 0.f, 0.f);
-    auto c1 = gszauer::vec3(-2.f, 1.f, 0.f);
-    auto c2 = gszauer::vec3(+2.f, 1.f, 0.f);
+    ImGui::Begin("Bezier curve");
+    ImGui::Text("Curve");
 
-    auto red = gszauer::vec4(1.f, 0.f, 0.f, 1.f);
-    auto green = gszauer::vec4(0.f, 1.f, 0.f, 1.f);
-    auto blue = gszauer::vec4(0.f, 0.f, 1.f, 1.f);
-    auto magenta = gszauer::vec4(1.f, 0.f, 1.f, 1.f);
+    auto p1 = vec3(-5.f, 0.f, 0.f);
+    auto p2 = vec3(+5.f, 0.f, 0.f);
+    auto c1 = vec3(-2.f, 1.f, 0.f);
+    auto c2 = vec3(+2.f, 1.f, 0.f);
+
+    auto red = vec4(1.f, 0.f, 0.f, 1.f);
+    auto green = vec4(0.f, 1.f, 0.f, 1.f);
+    auto blue = vec4(0.f, 0.f, 1.f, 1.f);
+    auto magenta = vec4(1.f, 0.f, 1.f, 1.f);
 
     ImGuiGrid grid;
-    grid.mgmin = gszauer::vec2(-5.f);
-    grid.mgmax = gszauer::vec2(+5.f);
+    grid.mgmin = vec2(-5.f);
+    grid.mgmax = vec2(+5.f);
     grid.drawGrid();
 
     gszauer::Bezier<gszauer::vec3> curve;
@@ -275,7 +279,7 @@ int main(int, char**)
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ShowLinePlot();
+        ShowBezierPlot();
 
         // Rendering
         ImGui::Render();
