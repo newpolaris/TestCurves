@@ -245,12 +245,6 @@ void ShowSlerpPlot()
     }
 }
 
-void ShowGraphPlots()
-{
-    ShowBezierPlot();
-    ShowSlerpPlot();
-}
-
 // Main code
 int main(int, char**)
 {
@@ -329,7 +323,8 @@ int main(int, char**)
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ShowGraphPlots();
+        ShowBezierPlot();
+        ShowSlerpPlot();
 
         // Rendering
         ImGui::Render();

@@ -45,6 +45,9 @@
     <ClCompile Include="gszauer\Vec3.cpp">
       <Filter>Source Files\gszauer</Filter>
     </ClCompile>
+    <ClCompile Include="gszauer\Mat4.cpp">
+      <Filter>Source Files\gszauer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -72,6 +75,9 @@
       <Filter>Source Files\imgui</Filter>
     </ClInclude>
     <ClInclude Include="gszauer\Vec3.h">
+      <Filter>Source Files\gszauer</Filter>
+    </ClInclude>
+    <ClInclude Include="gszauer\Mat4.h">
       <Filter>Source Files\gszauer</Filter>
     </ClInclude>
   </ItemGroup>
