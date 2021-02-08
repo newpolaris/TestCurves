@@ -56,6 +56,7 @@ vec3 operator/(const vec3& l, float f);
 vec3 operator*(float f, const vec3& l);
 
 vec3 lerp(const vec3& s, const vec3& e, float t);
+vec3 nlerp(const vec3& s, const vec3& e, float t);
 
 float dot(const vec3& l, const vec3& r);
 float lenSq(const vec3& v);
@@ -68,6 +69,10 @@ float angle(const vec3& l, const vec3& r);
 vec3 project(const vec3& a, const vec3& b);
 vec3 reject(const vec3& a, const vec3& b);
 vec3 reflect(const vec3& a, const vec3& b);
+
+vec3 cross(const vec3& l, const vec3& r);
+
+vec3 slerp(const vec3& s, const vec3& e, float t);
 
 template <typename T>
 class Bezier {

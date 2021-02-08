@@ -63,7 +63,12 @@ vec3 operator*(float f, const vec3& l)
 
 vec3 lerp(const vec3& s, const vec3& e, float t)
 {
-    return e * t + s * (1 - t);
+    return s + (e - s) * t;
+}
+
+vec3 nlerp(const vec3& s, const vec3& e, float t)
+{
+    return normalized(lerp(s, e, t));
 }
 
 float dot(const vec3& l, const vec3& r)
@@ -125,6 +130,24 @@ vec3 reflect(const vec3& a, const vec3& b) {
     float scale = dot(a, b) / magBSq;
     vec3 proj2 = b * (scale * 2);
     return a - proj2;
+}
+
+vec3 cross(const vec3& l, const vec3& r) {
+    return vec3(
+        l.y * r.z - l.z * r.y,
+        l.z * r.x - l.x * r.z,
+        l.x * r.y - l.y * r.x);
+}
+
+vec3 slerp(const vec3& s, const vec3& e, float t)
+{
+    vec3 from = normalized(s);
+    vec3 to = normalized(e);
+    float theta = angle(from, to);
+    float sin_theta = sinf(theta);
+    float a = sinf((1.0f - t) * theta) / sin_theta;
+    float b = sinf(t * theta) / sin_theta;
+    return from * a + to * b;
 }
 
 } // namespace gszauer

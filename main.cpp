@@ -41,14 +41,16 @@ struct ImGuiGrid
     enum { LINE_WIDTH = 1 }; // handlers: small lines width
     enum { GRAB_RADIUS = 8 }; // handlers: circle radius
     enum { GRAB_BORDER = 2 }; // handlers: circle border width
+    enum { GRAB_SMALL_RADIUS = 3 };
     enum { AREA_CONSTRAINED = true }; // should grabbers be constrained to grid area?
     enum { AREA_WIDTH = 256 }; // area width in pixels. 0 for adaptive size (will use max avail width)
 
     bool drawGrid();
     bool drawLine(gszauer::vec2 a, gszauer::vec2 b, gszauer::vec4 c);
-    bool drawPoint(gszauer::vec2 p, gszauer::vec4 c);
     bool drawLine(gszauer::vec3 a, gszauer::vec3 b, gszauer::vec4 c);
+    bool drawPoint(gszauer::vec2 p, gszauer::vec4 c);
     bool drawPoint(gszauer::vec3 p, gszauer::vec4 c);
+    bool drawSmallPoint(gszauer::vec3 p, gszauer::vec4 c);
 
     ImVec2 scalePosition(gszauer::vec2 p);
 
@@ -146,6 +148,22 @@ bool ImGuiGrid::drawPoint(gszauer::vec3 p, gszauer::vec4 c)
     return drawPoint(gszauer::vec2(p), c);
 }
 
+bool ImGuiGrid::drawSmallPoint(gszauer::vec3 p, gszauer::vec4 c)
+{
+    using namespace ImGui;
+
+    ImVec4 white(GetStyle().Colors[ImGuiCol_Text]);
+
+    ImDrawList* DrawList = GetWindowDrawList();
+
+    ImVec2 pos = scalePosition(p);
+    ImColor color(c.r, c.g, c.b, c.a);
+
+    DrawList->AddCircleFilled(pos, GRAB_SMALL_RADIUS, color);
+
+    return true;
+}
+
 ImVec2 ImGuiGrid::scalePosition(gszauer::vec2 p)
 {
     gszauer::vec2 npos = (p - mgmin) / (mgmax - mgmin);
@@ -199,6 +217,38 @@ void ShowBezierPlot()
     grid.drawPoint(c2, green);
 
     ImGui::End();
+}
+
+void ShowSlerpPlot()
+{
+    using gszauer::vec2;
+    using gszauer::vec3;
+    using gszauer::slerp;
+
+    ImGuiGrid grid;
+    grid.mgmin = vec2(0.f);
+    grid.mgmax = vec2(+10.f);
+    grid.drawGrid();
+
+    auto o = vec3(0.f, 0.f, 0.f);
+    auto s = vec3(0.f, 10.f, 0.f);
+    auto e = vec3(10.f, 0.f, 0.f);
+    auto l = len(s - o);
+
+    static const int k = 30;
+    float d = 1.f / k;
+    for (int i = 0; i < k; i++) {
+        vec3 a = slerp(s, e, d*i) * (l * 0.9f);
+        vec3 b = nlerp(s, e, d*i) * l;
+        grid.drawSmallPoint(b, cyan);
+        grid.drawSmallPoint(a, pink);
+    }
+}
+
+void ShowGraphPlots()
+{
+    ShowBezierPlot();
+    ShowSlerpPlot();
 }
 
 // Main code
@@ -279,7 +329,7 @@ int main(int, char**)
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ShowBezierPlot();
+        ShowGraphPlots();
 
         // Rendering
         ImGui::Render();
