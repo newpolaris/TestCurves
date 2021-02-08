@@ -197,6 +197,10 @@ void ShowLinePlot()
     ImGui::End();
 }
 
+void ShowSlerpPlot()
+{
+}
+
 // Main code
 int main(int, char**)
 {
@@ -276,6 +280,7 @@ int main(int, char**)
         ImGui::NewFrame();
 
         ShowLinePlot();
+        ShowSlerpPlot();
 
         // Rendering
         ImGui::Render();
