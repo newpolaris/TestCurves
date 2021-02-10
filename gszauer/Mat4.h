@@ -59,6 +59,28 @@ struct mat4
 
     }
 
+    template <typename R, typename A, typename B>
+    constexpr R multiply(A lhs, B rhs) {
+        R res{};
+        for (size_t col = 0; col < R::cols; col++) {
+            res[col] = lhs * rhs[col];
+        }
+        return res;
+    }
+
+    // matrix * matrix
+    constexpr mat4& operator*=(const mat4& rhs) {
+        mat4& lhs(*this);
+        lhs = multiply<mat4>(lhs, rhs);
+        return lhs;
+    }
+
+    // matrix * vector
+    constexpr vec4 operator*=(const vec4& rhs) const {
+        vec4 res{};
+        return res;
+    }
+
     union {
         struct { vec4 x, y, z, w; };
         float v[16];

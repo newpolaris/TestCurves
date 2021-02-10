@@ -228,6 +228,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gszauer\Interpolation.h" />
     <ClInclude Include="gszauer\Mat4.h" />
     <ClInclude Include="gszauer\Vec3.h" />
     <ClInclude Include="imgui\imconfig.h" />

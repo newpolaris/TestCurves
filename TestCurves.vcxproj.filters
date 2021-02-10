@@ -80,6 +80,9 @@
     <ClInclude Include="gszauer\Mat4.h">
       <Filter>Source Files\gszauer</Filter>
     </ClInclude>
+    <ClInclude Include="gszauer\Interpolation.h">
+      <Filter>Source Files\gszauer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
