@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Vec3.h"
 #include <math.h>
+
+#include "Vec3.h"
+#include "Vec4.h"
 
 #define MAT4_EPSILON 0.000001f
 
@@ -85,8 +87,8 @@ struct mat4
     };
 };
 
-bool MATH_PURE operator==(const mat4& a, const mat4& b);
-bool MATH_PURE operator!=(const mat4& a, const mat4& b);
+bool operator==(const mat4& a, const mat4& b);
+bool operator!=(const mat4& a, const mat4& b);
 
 inline constexpr mat4 operator+(const mat4& a, const mat4& b)
 {

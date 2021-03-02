@@ -3,7 +3,7 @@
 
 namespace gszauer {
 
-bool MATH_PURE operator==(const mat4& a, const mat4& b) 
+bool operator==(const mat4& a, const mat4& b) 
 {
     #pragma nounroll
     for (size_t i = 0; i < 16; i++) {
@@ -14,7 +14,7 @@ bool MATH_PURE operator==(const mat4& a, const mat4& b)
     return true;
 }
 
-bool MATH_PURE operator!=(const mat4& a, const mat4& b)
+bool operator!=(const mat4& a, const mat4& b)
 {
     return !(a == b);
 }
