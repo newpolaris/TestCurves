@@ -62,9 +62,6 @@ struct mat4
     template <typename R, typename A, typename B>
     constexpr R multiply(A lhs, B rhs) {
         R res{};
-        for (size_t col = 0; col < R::cols; col++) {
-            res[col] = lhs * rhs[col];
-        }
         return res;
     }
 
