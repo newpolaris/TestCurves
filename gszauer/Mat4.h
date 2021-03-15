@@ -34,6 +34,24 @@ struct mat4
     {
     }
 
+    template <typename U>
+    constexpr mat4(U v) noexcept
+        : col{
+        vec4(v, 0, 0, 0),
+        vec4(0, v, 0, 0),
+        vec4(0, 0, v, 0),
+        vec4(0, 0, 0, v) } {
+    }
+
+    template <typename U>
+    constexpr explicit mat4(const TVec4<U>& v) noexcept
+        : col{
+        vec4(v[0], 0, 0, 0),
+        vec4(0, v[1], 0, 0),
+        vec4(0, 0, v[2], 0),
+        vec4(0, 0, 0, v[3]) } {
+    }
+
     mat4(float* v) :
         x(v[ 0], v[ 1], v[ 2], v[ 3]),
         y(v[ 4], v[ 5], v[ 6], v[ 7]),
@@ -57,6 +75,15 @@ struct mat4
         mat4& lhs = *this;
         for (size_t i = 0; i < 4; i++)
             lhs[i] += v[i];
+        return lhs;
+
+    }
+
+    constexpr mat4& operator-=(const mat4& v)
+    {
+        mat4& lhs = *this;
+        for (size_t i = 0; i < 4; i++)
+            lhs[i] -= v[i];
         return lhs;
 
     }
@@ -98,3 +125,5 @@ inline constexpr mat4 operator+(const mat4& a, const mat4& b)
 }
 
 } // namespace gszauer
+
+using mat4 = gszauer::mat4;
