@@ -9,8 +9,59 @@
 
 namespace gszauer {
 
+template <typename T, typename U>
+struct arithmetic_result {
+    using type = decltype(std::declval<T>() + std::declval<U>());
+};
+
+template <template<typename T> class VECTOR, typename T>
+class TVecOperators {
+public:
+    /* compound assignment from a another vector of the same size buf different
+     * element type.
+     */
+    template <typename U>
+    constexpr VECTOR<T>& operator+=(const VECTOR<U>& u) {
+        VECTOR<T>& lhs = static_cast<VECTOR<T>&>(*this);
+        for (size_t i = 0; i < lhs.size(); i++)
+            lhs[i] += u[i];
+        return lhs;
+    }
+
+    template <typename U>
+    constexpr VECTOR<T>& operator-=(const VECTOR<U>& u) {
+        VECTOR<T>& lhs = static_cast<VECTOR<T>&>(*this);
+        for (size_t i = 0; i < lhs.size(); i++)
+            lhs[i] -= u[i];
+        return lhs;
+    }
+
+    template <typename U>
+    constexpr VECTOR<T>& operator*=(const VECTOR<U>& u) {
+        VECTOR<T>& lhs = static_cast<VECTOR<T>&>(*this);
+        for (size_t i = 0; i < lhs.size(); i++)
+            lhs[i] *= u[i];
+        return lhs;
+    }
+
+private:
+
+    // friend decl. with function impl.
+    // so, the functions below ARE NOT member methods.
+
+    template <typename U>
+    friend inline constexpr 
+    VECTOR<T> operator+(const TVec4<T>& l, const TVec4<U>& r)
+    {
+        TVec4<T> res(l);
+        res += r;
+        return res;
+    }
+};
+
 template <typename T>
-struct TVec4 {
+struct TVec4 :
+    public TVecOperators<TVec4, T> {
 
     static constexpr size_t SIZE = 4;
 
@@ -57,43 +108,12 @@ struct TVec4 {
         return v[i];
     }
 
-    template <typename U>
-    constexpr TVec4<T>& operator+=(const TVec4<U>& u) {
-        TVec4<T>& lhs = *this;
-        for (size_t i = 0; i < 4; i++)
-            lhs[i] += u[i];
-        return lhs;
-    }
-
-    template <typename U>
-    constexpr TVec4<T>& operator-=(const TVec4<U>& u) {
-        TVec4<T>& lhs = *this;
-        for (size_t i = 0; i < 4; i++)
-            lhs[i] -= u[i];
-        return lhs;
-    }
-
-    template <typename U>
-    constexpr TVec4<T>& operator*=(const TVec4<U>& u) {
-        TVec4<T>& lhs = *this;
-        for (size_t i = 0; i < 4; i++)
-            lhs[i] *= u[i];
-        return lhs;
-    }
+    constexpr size_t size() const noexcept { return SIZE; }
 };
 
-template <typename T>
+template <typename T, typename U>
 inline constexpr 
-TVec4<T> operator+(const TVec4<T>& l, const TVec4<T>& r)
-{
-    TVec4<T> res(l);
-    res += r;
-    return res;
-}
-
-template <typename T>
-inline constexpr 
-TVec4<T> operator-(const TVec4<T>& l, const TVec4<T>& r)
+TVec4<T> operator-(const TVec4<T>& l, const TVec4<U>& r)
 {
     TVec4<T> res(l);
     res -= r;
