@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "gszauer/Vec3.h"
+#include "gszauer/Vec4.h"
 
 class VecTest : public testing::Test {
 protected:

@@ -16,12 +16,13 @@
 #include <dinput.h>
 #include <tchar.h>
 #include <vector>
+#include "gszauer/Vec2.h"
 #include "gszauer/Vec3.h"
-#include <glm/glm.hpp>
+#include "gszauer/Vec4.h"
 
-const gszauer::vec4 white(1.f, 1.f, 1.f, 1.f);
-const gszauer::vec4 pink(1.00f, 0.00f, 0.75f, 1.0f);
-const gszauer::vec4 cyan(0.00f, 0.75f, 1.00f, 1.0f);
+const vec4 white(1.f, 1.f, 1.f, 1.f);
+const vec4 pink(1.00f, 0.00f, 0.75f, 1.0f);
+const vec4 cyan(0.00f, 0.75f, 1.00f, 1.0f);
 
 // Data
 static ID3D11Device*            g_pd3dDevice = NULL;
@@ -46,16 +47,16 @@ struct ImGuiGrid
     enum { AREA_WIDTH = 256 }; // area width in pixels. 0 for adaptive size (will use max avail width)
 
     bool drawGrid();
-    bool drawLine(gszauer::vec2 a, gszauer::vec2 b, gszauer::vec4 c);
-    bool drawLine(gszauer::vec3 a, gszauer::vec3 b, gszauer::vec4 c);
-    bool drawPoint(gszauer::vec2 p, gszauer::vec4 c);
-    bool drawPoint(gszauer::vec3 p, gszauer::vec4 c);
-    bool drawSmallPoint(gszauer::vec3 p, gszauer::vec4 c);
+    bool drawLine(vec2 a, vec2 b, vec4 c);
+    bool drawLine(vec3 a, vec3 b, vec4 c);
+    bool drawPoint(vec2 p, vec4 c);
+    bool drawPoint(vec3 p, vec4 c);
+    bool drawSmallPoint(vec3 p, vec4 c);
 
-    ImVec2 scalePosition(gszauer::vec2 p);
+    ImVec2 scalePosition(vec2 p);
 
-    gszauer::vec2 mgmin = gszauer::vec2(0.f);
-    gszauer::vec2 mgmax = gszauer::vec2(1.f);
+    vec2 mgmin = vec2(0.f);
+    vec2 mgmax = vec2(1.f);
 
     ImVec2 mCanvas;
     ImRect mbb;
@@ -104,7 +105,7 @@ bool ImGuiGrid::drawGrid()
     return true;
 }
 
-bool ImGuiGrid::drawLine(gszauer::vec2 a, gszauer::vec2 b, gszauer::vec4 c)
+bool ImGuiGrid::drawLine(vec2 a, vec2 b, vec4 c)
 {
     using namespace ImGui;
 
@@ -121,7 +122,7 @@ bool ImGuiGrid::drawLine(gszauer::vec2 a, gszauer::vec2 b, gszauer::vec4 c)
     return true;
 }
 
-bool ImGuiGrid::drawPoint(gszauer::vec2 p, gszauer::vec4 c)
+bool ImGuiGrid::drawPoint(vec2 p, vec4 c)
 {
     using namespace ImGui;
 
@@ -138,17 +139,17 @@ bool ImGuiGrid::drawPoint(gszauer::vec2 p, gszauer::vec4 c)
     return true;
 }
 
-bool ImGuiGrid::drawLine(gszauer::vec3 a, gszauer::vec3 b, gszauer::vec4 c)
+bool ImGuiGrid::drawLine(vec3 a, vec3 b, vec4 c)
 {
-    return drawLine(gszauer::vec2(a), gszauer::vec2(b), c);
+    return drawLine(vec2(a), vec2(b), c);
 }
 
-bool ImGuiGrid::drawPoint(gszauer::vec3 p, gszauer::vec4 c)
+bool ImGuiGrid::drawPoint(vec3 p, vec4 c)
 {
-    return drawPoint(gszauer::vec2(p), c);
+    return drawPoint(vec2(p), c);
 }
 
-bool ImGuiGrid::drawSmallPoint(gszauer::vec3 p, gszauer::vec4 c)
+bool ImGuiGrid::drawSmallPoint(vec3 p, vec4 c)
 {
     using namespace ImGui;
 
@@ -164,18 +165,14 @@ bool ImGuiGrid::drawSmallPoint(gszauer::vec3 p, gszauer::vec4 c)
     return true;
 }
 
-ImVec2 ImGuiGrid::scalePosition(gszauer::vec2 p)
+ImVec2 ImGuiGrid::scalePosition(vec2 p)
 {
-    gszauer::vec2 npos = (p - mgmin) / (mgmax - mgmin);
+    vec2 npos = (p - mgmin) / (mgmax - mgmin);
     return ImVec2(npos.x, 1 - npos.y) * (mbb.Max - mbb.Min) + mbb.Min;
 }
 
 void ShowBezierPlot()
 {
-    using gszauer::vec2;
-    using gszauer::vec3;
-    using gszauer::vec4;
-
     ImGui::Begin("Bezier curve");
     ImGui::Text("Curve");
 
@@ -194,7 +191,7 @@ void ShowBezierPlot()
     grid.mgmax = vec2(+5.f);
     grid.drawGrid();
 
-    gszauer::Bezier<gszauer::vec3> curve;
+    gszauer::Bezier<vec3> curve;
     curve.P1 = p1;
     curve.P2 = p2;
     curve.C1 = c1;
@@ -204,8 +201,8 @@ void ShowBezierPlot()
     for (int i = 0; i < count; i++) {
         float t0 = (float)(i + 0) / count;
         float t1 = (float)(i + 1) / count;
-        auto k0 = gszauer::interpolate(curve, t0);
-        auto k1 = gszauer::interpolate(curve, t1);
+        auto k0 = interpolate(curve, t0);
+        auto k1 = interpolate(curve, t1);
         grid.drawLine(k0, k1, magenta);
     }
 
@@ -221,8 +218,6 @@ void ShowBezierPlot()
 
 void ShowSlerpPlot()
 {
-    using gszauer::vec2;
-    using gszauer::vec3;
     using gszauer::slerp;
 
     ImGuiGrid grid;
