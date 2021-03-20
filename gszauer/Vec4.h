@@ -14,6 +14,9 @@ struct arithmetic_result {
     using type = decltype(std::declval<T>() + std::declval<U>());
 };
 
+template <typename T, typename U>
+using arithmetic_result_t = arithmetic_result<T, U>::type;
+
 template <template<typename T> class VECTOR, typename T>
 class TVecOperators {
 public:

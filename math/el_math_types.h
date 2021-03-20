@@ -4,9 +4,9 @@
 #include <cassert>
 
 // https://docs.microsoft.com/en-us/previous-versions/hh567368(v=vs.140)
-// Unrestricted unions
+// Unrestricted unions (since 2015)
 #define SUPPORT_UNRESTRICTED_UNIONS 0
-#if _MSC_VER  >= 1900
+#if _MSC_VER >= 1900
 #undef SUPPORT_UNRESTRICTED_UNIONS
 #define SUPPORT_UNRESTRICTED_UNIONS 1
 #endif
@@ -41,8 +41,8 @@ struct VecOperators
         return lv += rv;
     }
 
-    template <typename RT>
-    friend inline VECTOR<T> operator+(VECTOR<T> lv, const VECTOR<RT>& rv)
+    template <typename U>
+    friend inline VECTOR<T> operator+(VECTOR<T> lv, const VECTOR<U>& rv)
     {
         return lv += rv;
     }
@@ -69,8 +69,8 @@ struct VecOperators
         return lv *= rv;
     }
 
-    template <typename RT>
-    friend inline VECTOR<T> operator*(VECTOR<T> lv, const VECTOR<RT>& rv)
+    template <typename U>
+    friend inline VECTOR<T> operator*(VECTOR<T> lv, const VECTOR<U>& rv)
     {
         return lv *= rv;
     }
@@ -97,8 +97,8 @@ struct VecOperators
         return lv /= rv;
     }
 
-    template <typename RT>
-    friend inline VECTOR<T> operator/(VECTOR<T> lv, const VECTOR<RT>& rv)
+    template <typename U>
+    friend inline VECTOR<T> operator/(VECTOR<T> lv, const VECTOR<U>& rv)
     {
         return lv /= rv;
     }
